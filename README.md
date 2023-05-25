@@ -1,2 +1,2 @@
 # BIMM143
-UCSD Intro to Bioinformatics Lab 
+My bioinformatics work for the UCSD Intro-t- Bioinformatics Lab 
