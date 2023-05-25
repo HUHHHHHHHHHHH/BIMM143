@@ -1,0 +1,229 @@
+---
+title: "Week 3, R Functions"
+author: "Charlie"
+date: "2023-04-22"
+output: html_document
+---
+
+This week we're intorducing R functions and how to write our own.
+
+> **Q1.** Write a function grade() to determine an overall grade from a vector of student homework assignment scores dropping the lowest single score. If a student misses a homework (i.e. has an NA value) this can be used as a score to be potentially dropped.
+
+```{r}
+# Example input vectors to start with
+student1 <- c(100, 100, 100, 100, 100, 100, 100, 90)
+student2 <- c(100, NA, 90, 90, 90, 90, 97, 80)
+student3 <- c(90, NA, NA, NA, NA, NA, NA, NA)
+
+```
+
+Guidelines from class
+- write a working code snippet to solve a simple problem
+
+```{r}
+#Straight forward  mean
+student1 <- c(100, 100, 100, 100, 100, 100, 100, 90)
+mean(student1)
+```
+
+However, we need to identify and drop the lowest score for each student. 
+
+```{r}
+#Which element of the student1 vector is the lowest?
+which.min(student1)
+```
+
+If I want to drop (exclude) the lowest score from my mean calculation:
+
+```{r}
+#This will return everything BUT the 8th element of my vector
+student1[-8]
+```
+
+Now we can use the answer from which.min to find the answer to our question.
+
+```{r}
+#Here is our first snippet of code. 
+mean(student1[-which.min(student1)])
+```
+
+
+For Students 2 and 3 we will have to replace all NAs with 0
+
+
+Student 2:
+
+```{r}
+student2 <- c(100, NA, 90, 90, 90, 90, 97, 80)
+x <- student2
+is.na(x)
+which( is.na(x))
+```
+
+We've now identified the NA values we want to mask and replace NA with 0.
+
+```{r}
+x[is.na(x)] <- 0
+x
+mean(x)
+```
+
+Now we just drop the lowest score. 
+
+```{r}
+x[is.na(x)] <- 0
+mean(x[-which.min(x)])
+```
+
+Student 3: 
+
+```{r}
+student3 <- c(90, NA, NA, NA, NA, NA, NA, NA)
+x <- student3
+x[is.na(x)] <- 0
+mean(x[-which.min(x)])
+```
+
+Now we're nearly there with our snippet! 
+
+##Now take the snippet and turn it into a function
+
+Every function has 3 parts:
+- A name (in our case `grade()`)
+- Input arguments, a vector of student scores
+- The body -- our snippet
+
+
+I will do this by selecting `Code then Extract Function` in Rstudio
+```{r}
+grades <- function(x) {
+  x[is.na(x)] <- 0
+  mean(x[-which.min(x)])
+}
+```
+
+
+```{r}
+grades(student1)
+grades(student2)
+grades(student3)
+```
+
+The code works! We just now need to add our comments to the function so that we can come back to this and understand it. 
+
+```{r}
+#' Calculate the average scroe for a vector of student scores, dropping the lowest value.
+#' Missing values will be treated as 0
+#'
+#' @param x A numeric vector of student scores. 
+#'
+#' @return Average score
+#' @export
+#'
+#' @examples
+#' student <- c(100, NA, 90, 97)
+#' grade(student)
+#' 
+#' 
+grades <- function(x) {
+  #treat missing values as 0
+  x[is.na(x)] <- 0
+  #exclude lowest value from mean
+  mean(x[-which.min(x)])}
+```
+
+
+
+> **Q2** Using your grade() function and the supplied gradebook, Who is the top scoring student overall in the gradebook?
+
+```{r}
+url <-  "https://tinyurl.com/gradeinput"
+gradebook <- read.csv(url, row.names = 1)
+
+```
+
+
+```{r}
+apply(gradebook, 1, grades)
+```
+
+Can calculate highest perfomrer using the apply() function
+```{r}
+results <- apply(gradebook, 1, grades)
+results
+```
+
+```{r}
+which.max(results)
+```
+
+
+
+**The highest performing student was student-18**
+
+
+
+> **Q3.** Which homeowrk was the toughest?? 
+
+
+```{r}
+avg.scores <- apply(gradebook, 2, mean, na.rm=TRUE)
+avg.scores
+which.min(avg.scores)
+
+
+```
+
+```{r}
+med.scores <- apply(gradebook, 2, median, na.rm=TRUE)
+med.scores
+which.min(med.scores)
+```
+
+Which is better? 
+
+```{r}
+boxplot(gradebook)
+```
+
+
+Due to variation in the data, the median is a more reliable metric to use when answering this question. 
+
+**The toughest homeowrk assignment was HW2**
+
+
+
+> **Q4.** From your analysis of the gradebook, which homework was most predictive of overall score? 
+
+
+Are the final results (avg score distribtuion) correlated with the results for individual homeworks? 
+```{r}
+masked.gradebook <- gradebook
+masked.gradebook[is.na(masked.gradebook)] <- 0 
+masked.gradebook
+
+```
+
+```{r}
+cor(results, gradebook$hw1)
+```
+
+```{r}
+apply(masked.gradebook, 2, cor, x=results)
+```
+
+**HW5 is the best predictor of overall class grades**
+
+
+
+
+> **Q5.** Make sure you save your Quarto document and can click the “Render” (or Rmarkdown”Knit”) button to generate a PDF foramt report without errors. Finally, submit your PDF to gradescope. 
+
+Knit the document to produce a PDF *(or HTML that you'll convert to PDF later if your computer is trash like mine)*
+
+
+
+
+
+
+
