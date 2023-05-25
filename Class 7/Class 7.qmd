@@ -1,0 +1,214 @@
+---
+title: "Class 7"
+author: "Charlie Rezanka (A15837296)"
+format: html
+---
+
+#Clustering 
+
+First, lets make some data to cluster so we an get a feel for these methods and how to work with them.
+
+
+We can use the `rnorm()` function to get random numbers from a normal distribution around a given `mean()`.
+
+```{r}
+hist(rnorm(50, mean=3))
+```
+
+
+Lets get 30 points with a mean of 3. 
+
+```{r}
+tmp <- c(rnorm(30, mean=3), rnorm(30, mean=-3))
+tmp 
+
+```
+
+Lets put these two together:
+```{r}
+x <- cbind(x=tmp, y=rev(tmp))
+x
+```
+
+```{r}
+plot(x)
+```
+
+##K-means Clustering 
+
+This is a very popular clustering method, especially for large datasets, that can be used with `kmeans()`
+
+```{r}
+km <- kmeans(x, centers=2)
+km
+```
+
+>""Q"" How many points are in each cluster?? 
+
+    30 points in each cluster
+    
+
+>""Q"" What component of your result corresponds to cluster size (A), cluster assignment (B), and cluster center (C)
+
+    A  km$size
+    B  km$cluster
+    C  km$centers
+    
+```{r}
+km$size
+km$cluster
+km$centers
+```
+
+>""Q"" Plot x colored by the kmeans cluster assignment and add cluster centers as blue points
+    
+
+```{r}
+plot(x, col=km$cluster)
+points(km$centers, col="blue", pch=15, cex=3)
+##pch assignes the centers a shape similar to colors
+#cex determines the size of the shape
+```
+
+
+>""Q"" Lets cluster into 3 groups or some `x` data to make a plot.
+
+
+```{r}
+km <- kmeans(x, centers=3)
+plot(x, col=km$cluster)
+```
+
+
+
+
+#Hierarchical Clustering
+
+We can use the `hclust()` function for Hierarchical clustering. 
+Unlike `kmeans()`, where we can just pass in our data as input, we
+need to give `hclust()` a "distance matrix". 
+
+We will use the `dist()` function to start with. 
+
+```{r}
+d=dist(x)
+hc <- hclust(d)
+hc
+```
+
+```{r}
+plot(hc)
+```
+
+
+I can now "cut" my tree with `cutree()` to yield a cluster membership vector
+
+```{r}
+grps <- cutree(hc, h=8)
+```
+
+
+You can also tell `cutree()` to cut where it yields "k" groups.
+
+```{r}
+cutree(hc, k=2)
+```
+
+
+```{r}
+plot(x, col=grps)
+```
+
+
+
+
+#Principal Component Analysis, PCA Worksheet
+
+Data will first be plotted along a primary axis (PC1) to show variability. Subsequent criteria for variability are added as additional axis and the variance of points for that criteria is shown as distribution.
+
+
+```{r}
+x<- read.csv("https://tinyurl.com/UK-foods", row.names = 1)
+x
+
+```
+
+
+""Q1"" How many rows and columns are in this dataset? What functions can you use to answer this question? 
+
+  17 rows, 4 columns. nrow and ncol can be used respectively. dim()   also works.
+
+```{r}
+nrow(x)
+ncol(x)
+```
+
+
+```{r}
+rownames(x) <- x[,1]
+x <- x[,-1]
+head(x)
+```
+
+
+""Q2"" Which sorting approach is preferred? 
+
+x <- read.csv(url, row.names=1) head(x)` is the preferred code because running the earlier code will cause the number of columns to repeatedly shift. 
+
+
+This can be graphed:
+```{r}
+barplot(as.matrix(x), beside=T, col=rainbow(nrow(x)))
+```
+
+
+
+""Q3"" Changing what optional argument in the above barplot() function results in the following plot?
+
+Change the beside factor from true to false
+```{r}
+barplot(as.matrix(x), beside=F, col=rainbow(nrow(x)))
+```
+
+
+
+
+
+
+""Q5"" Generating all pairwise plots may help somewhat. Can you make sense of the following code and resulting figure? What does it mean if a given point lies on the diagonal for a given plot?
+
+```{r}
+pairs(x, col=rainbow(10), pch=16)
+```
+
+Each plot is a similarity graph between the y axis country and x axis country. Each dot represents an area of comparison (ex. fresh fruit). The x and y axis are the levels of consumption for the respective country. The closer a point is to the middle of the graph, the more evenly distributed consuption of that food is between the two countries.
+
+
+
+
+How can we generate a PCA function of this data? The main PCA function is called `prcomp()`, which expects the transpose of our data.
+
+```{r}
+pca<- prcomp(t(x))
+summary(pca)
+```
+
+```{r}
+attributes(pca)
+```
+
+```{r}
+pca$x
+```
+
+
+```{r}
+plot(pca$x[,1], pca$x[,2], xlab="PC1", ylab="PC2", col=c("orange", "red", "blue", "darkgreen"), pch=16)
+text(pca$x[,1], pca$x[,2], colnames(x))
+```
+
+
+
+
+
+
