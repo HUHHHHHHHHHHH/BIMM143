@@ -1,0 +1,84 @@
+---
+title: "Class 12 HW"
+author: "Charlie Rezanka (A15837296)"
+format: html
+---
+
+# Proportion of G/G in data
+
+Downloaded a CSV file from ensemble (https://useast.ensembl.org/Homo_sapiens/Variation/Sample?db=core;r=17:39905111-40015112;v=rs8067378;vdb=variation;vf=105535077#373531_tablePanel)
+
+```{r}
+mxl <- read.csv("373531-SampleGenotypes-Homo_sapiens_Variation_Sample_rs8067378.csv", row.names = 1)
+
+head(mxl)
+```
+
+
+```{r}
+table(mxl$Genotype..forward.strand.)
+```
+
+```{r}
+(table(mxl$Genotype..forward.strand.) / nrow(mxl))*100
+```
+
+Lets look at a different population, such as Great Britin
+
+```{r}
+gbr <- read.csv("373522-SampleGenotypes-Homo_sapiens_Variation_Sample_rs8067378.csv", row.names =1)
+
+head(gbr)
+```
+
+Find the portion of G/G 
+
+```{r}
+(table(gbr$Genotype..forward.strand.)/ nrow(gbr))*100
+```
+
+The haplotype most associated with childhood asthma is more common in the GB population than MXL
+
+
+## Population Scale Analysis Homework
+
+```{r}
+exp <- read.table("rs8067378_ENSG00000172057.6.txt", row.names = 1)
+head(exp)
+```
+
+> Q13. Read this file into R and determine the sample size for each genotype and their corresponding median expression levels for each of these genotypes.
+
+```{r}
+nrow(exp)
+```
+
+
+```{r}
+table(exp$geno)
+```
+
+```{r}
+medians <- aggregate(exp ~ geno, data = exp, FUN = median)
+head(medians)
+```
+
+
+Out of a total of 462 samples, the A/A genotype has a sample size of 108, A/G of 233, and G/G of 121. Median expression for A/A is 31.2, for A/G is 25.1, and G/G is 20.1.
+
+
+
+> Q14. Generate a boxplot with a box per genotype, what could you infer from the relative expression value between A/A and G/G displayed in this plot? Does the SNP effect the expression of ORMDL3?
+
+```{r}
+library(ggplot2)
+ggplot(exp) + aes(geno, exp, fill=geno) + 
+  geom_boxplot()
+```
+
+The presence of the G allele in either heterozygous or homozygous genotypes will result in a drop in ORMDL3 expression, with the homozygous G/G genotype having the lowest expression. 
+
+
+
+
+

@@ -1,0 +1,116 @@
+---
+title: "Class 9"
+author: "Charlie Rezanka (A15837296)"
+format: html
+---
+
+# PBD Statistics
+
+```{r}
+data <- read.csv("Data Export Summary.csv", row.names=1)
+head(data)
+```
+
+> Q1: What percentage of structures in the PDB are solved by X-Ray and Electron Microscopy.
+
+```{r}
+#create a function with X as an imput
+sum_comma <- function(data) {
+  #Substitute comma and convert to numeric 
+  sum(as.numeric(gsub(",","", data))) 
+}
+
+```
+
+For X Ray
+
+```{r}
+round(sum_comma(data$X.ray)/sum_comma(data$Total), 3)*100
+
+```
+
+For EM
+
+```{r}
+round(sum_comma(data$EM)/sum_comma(data$Total), 3)*100
+```
+
+> Q2: What proportion of structures in the PDB are protein?
+
+```{r}
+round(sum_comma(data$Total[1])/sum_comma(data$Total), 3)*100
+```
+
+> Q3: Insert your HIV image.
+
+![HIV-PR structure from MERK with critical residues highlighted. Protein structure is color coded to residue.](1HSG.png)
+
+
+> Q4: Water molecules normally have 3 atoms. Why do we see just one atom per water molecule in this structure?
+
+Hydrogen molecules are too small and abundant to be efficiently displayed
+
+> Q5: There is a critical “conserved” water molecule in the binding site. Can you identify this water molecule? What residue number does this water molecule have
+
+The water molecule binds to to ASP25 on each chain
+
+
+
+
+#Working with Structures in R 
+
+
+```{r}
+library(bio3d)
+pdb <- read.pdb("1hsg")
+pdb
+```
+
+```{r}
+head(pdb$atom)
+```
+
+> Q7: How many amino acid residues are there in this pdb object? 
+
+There are 190 residues. 
+
+
+> Q8: Name one of the two non-protein residues? 
+
+Water (shown as HOH)
+
+
+> Q9: How many protein chains are in this structure? 
+
+There are 2 chains. 
+
+
+# Predicting Movements of a Structure 
+
+First, read the ADK structure
+
+```{r}
+adk <- read.pdb("6s36")
+adk
+```
+
+
+Perform a prediction of flexibility with a technique called NMA (normal mode analysis), which is meant to predict flexibility and motion.
+
+```{r}
+m <- nma(adk)
+plot(m)
+```
+
+
+Write out a "movie" (trajectory) of the motion for viewing in MOlstar
+
+```{r}
+mktrj(m, file="adk_m7.pdb")
+```
+
+
+
+
+
+

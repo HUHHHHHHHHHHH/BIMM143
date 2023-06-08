@@ -1,0 +1,12 @@
+
+ssh -i "bimm143_charlie.pem"
+ubuntu@ec2-52-24-29-232.us-west-2.compute.amazonaws.com
+
+scpq -i "bimm143_charlie.pem"
+ubuntu@ec2-52-24-29-232.us-west-2.compute.amazonaws.com:~/work/*.tsv.results.tsv
+
+
+
+
+
+Successfully initiated launch of instance (i-0c00ed858bdb0eee1)
